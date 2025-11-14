@@ -1,0 +1,14 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - database/factories
+        - database/seeders
+
+    # Level 0-9 (0 is least strict, 9 is most strict)
+    level: 5
+
+    excludePaths:
+        - ./*/*/FileToBeExcluded.php
