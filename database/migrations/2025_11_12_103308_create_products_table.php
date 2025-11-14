@@ -5,7 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -25,7 +26,7 @@ return new class extends Migration {
             $table->index('store_id', 'idx_products_store');
         });
 
-        DB::statement(<<<SQL
+        DB::statement(<<<'SQL'
             CREATE INDEX idx_products_name_fts
             ON products USING GIN (to_tsvector('simple', name))
         SQL);
