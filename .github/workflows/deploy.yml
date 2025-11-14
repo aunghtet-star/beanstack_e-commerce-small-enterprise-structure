@@ -14,7 +14,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     # Uses manual input if provided, otherwise defaults to 'production'
-    environment: ${{ github.event.inputs.environment && github.event.inputs.environment || 'production' }}
+    environment: Bean
     
     steps:
     - name: Checkout code
