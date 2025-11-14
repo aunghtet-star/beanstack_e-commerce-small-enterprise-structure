@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedInteger('store_id')->default(1);
             $table->text('name');
             $table->text('slug')->unique();
-            $table->integer('price');
+            $table->decimal('price', 10, 2);
             $table->integer('stock')->default(0);
             $table->jsonb('meta')->nullable();
             $table->timestampTz('created_at')->useCurrent();

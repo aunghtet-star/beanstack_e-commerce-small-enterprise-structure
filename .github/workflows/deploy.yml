@@ -1,0 +1,91 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, dom, fileinfo, pgsql
+
+    - name: Install Composer Dependencies
+      run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+    - name: Install NPM Dependencies
+      run: npm ci
+
+    - name: Build Assets
+      run: npm run build
+
+    # Deploy to DigitalOcean Droplet
+    - name: Deploy to DigitalOcean Droplet
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DROPLET_HOST }}
+        username: ${{ secrets.DROPLET_USERNAME }}
+        password: ${{ secrets.DROPLET_PASSWORD }}
+        # Port defaults to 22 if not provided
+        port: ${{ secrets.DROPLET_PORT }}
+        envs: DEPLOY_PATH
+        script: |
+          # Set deployment path (default to project path if not provided)
+          DEPLOY_PATH=${DEPLOY_PATH:-/var/www/beanstack_e-commerce-small-enterprise-structure}
+          mkdir -p "$DEPLOY_PATH"
+          cd "$DEPLOY_PATH"
+
+          # Ensure repository is present and up to date
+          if [ ! -d .git ]; then
+            echo "Cloning repository..."
+            git init
+            git remote add origin https://github.com/${{ github.repository }}.git
+            git fetch --depth=1 origin main
+            git checkout -t origin/main
+          else
+            echo "Resetting repository to origin/main..."
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
+          fi
+          
+          # Install/update dependencies
+          composer install --no-interaction --no-dev --optimize-autoloader
+          npm ci && npm run build
+          
+          # Run migrations
+          php artisan migrate --force
+          
+          # Clear and cache configurations
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan view:clear
+          php artisan route:clear
+          
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          
+          # Restart queue workers if using queues
+          php artisan queue:restart
+          
+          # Set proper permissions
+          sudo chown -R www-data:www-data storage bootstrap/cache
+          sudo chmod -R 775 storage bootstrap/cache
+
+    - name: Deployment Success Notification
+      if: success()
+      run: echo "✅ Deployment to DigitalOcean completed successfully!"
+      
+    - name: Deployment Failure Notification
+      if: failure()
+      run: echo "❌ Deployment failed! Check the logs above."
