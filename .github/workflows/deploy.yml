@@ -4,10 +4,17 @@ on:
   push:
     branches: [ main ]
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "GitHub Environment name (e.g., production, staging)"
+        required: false
+        default: "production"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Uses manual input if provided, otherwise defaults to 'production'
+    environment: ${{ github.event.inputs.environment && github.event.inputs.environment || 'production' }}
     
     steps:
     - name: Checkout code
