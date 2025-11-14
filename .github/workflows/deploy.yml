@@ -43,6 +43,16 @@ jobs:
         if [ -z "${{ secrets.DROPLET_PASSWORD }}" ]; then echo "::error ::Missing required secret DROPLET_PASSWORD"; MISSING=1; fi
         if [ "$MISSING" -ne 0 ]; then echo "Missing required secrets. Configure them in Settings → Secrets and variables → Actions"; exit 1; fi
 
+    - name: Debug environment context (no secrets printed)
+      run: |
+        echo "Workflow environment name: ${{ github.event.inputs.environment && github.event.inputs.environment || 'production' }}"
+        echo "Repository: ${{ github.repository }}"
+        echo "Actor: ${{ github.actor }}"
+        # Show which secret names are set (length only, not values)
+        [ -n "${{ secrets.DROPLET_HOST }}" ] && echo "DROPLET_HOST length OK" || echo "DROPLET_HOST missing"
+        [ -n "${{ secrets.DROPLET_USERNAME }}" ] && echo "DROPLET_USERNAME length OK" || echo "DROPLET_USERNAME missing"
+        [ -n "${{ secrets.DROPLET_PASSWORD }}" ] && echo "DROPLET_PASSWORD length OK" || echo "DROPLET_PASSWORD missing"
+
     # Deploy to DigitalOcean Droplet
     - name: Deploy to DigitalOcean Droplet
       uses: appleboy/ssh-action@master
