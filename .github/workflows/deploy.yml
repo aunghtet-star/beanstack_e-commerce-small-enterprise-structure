@@ -28,6 +28,14 @@ jobs:
     - name: Build Assets
       run: npm run build
 
+    - name: Validate deployment secrets
+      run: |
+        MISSING=0
+        if [ -z "${{ secrets.DROPLET_HOST }}" ]; then echo "::error ::Missing required secret DROPLET_HOST"; MISSING=1; fi
+        if [ -z "${{ secrets.DROPLET_USERNAME }}" ]; then echo "::error ::Missing required secret DROPLET_USERNAME"; MISSING=1; fi
+        if [ -z "${{ secrets.DROPLET_PASSWORD }}" ]; then echo "::error ::Missing required secret DROPLET_PASSWORD"; MISSING=1; fi
+        if [ "$MISSING" -ne 0 ]; then echo "Missing required secrets. Configure them in Settings → Secrets and variables → Actions"; exit 1; fi
+
     # Deploy to DigitalOcean Droplet
     - name: Deploy to DigitalOcean Droplet
       uses: appleboy/ssh-action@master
@@ -35,8 +43,6 @@ jobs:
         host: ${{ secrets.DROPLET_HOST }}
         username: ${{ secrets.DROPLET_USERNAME }}
         password: ${{ secrets.DROPLET_PASSWORD }}
-        # Port defaults to 22 if not provided
-        port: ${{ secrets.DROPLET_PORT }}
         envs: DEPLOY_PATH
         script: |
           # Set deployment path (default to project path if not provided)
