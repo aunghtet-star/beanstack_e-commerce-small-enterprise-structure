@@ -32,6 +32,6 @@ class ProductFactory extends Factory
 
     public function zeroStock(): self
     {
-        return $this->state(fn() => ['stock' => 0]);
+        return $this->state(fn () => ['stock' => 0]);
     }
 }

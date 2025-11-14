@@ -34,10 +34,10 @@ class HomePageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        
+
         // Assert that products are passed to the view
         $response->assertViewHas('featuredProducts');
-        
+
         // Assert that product names appear on the page
         foreach ($products as $product) {
             $response->assertSee($product->name);
@@ -83,7 +83,7 @@ class HomePageTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewHas('totalProducts', 13);
         $response->assertViewHas('productsInStock', 10);
-        
+
         // Check if statistics appear on the page
         $response->assertSee('13'); // total products
         $response->assertSee('10'); // products in stock
@@ -100,9 +100,9 @@ class HomePageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        
+
         $featuredProducts = $response->viewData('featuredProducts');
-        
+
         // Assert that only 8 products are shown
         $this->assertCount(8, $featuredProducts);
     }
@@ -129,9 +129,9 @@ class HomePageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        
+
         $featuredProducts = $response->viewData('featuredProducts');
-        
+
         // Assert that the newest product comes first
         $this->assertEquals($newProduct->id, $featuredProducts->first()->id);
     }
