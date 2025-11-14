@@ -35,12 +35,21 @@ jobs:
     - name: Build Assets
       run: npm run build
 
+    - name: Resolve deployment credentials (env or repo vars)
+      run: |
+        HOST="${{ secrets.DROPLET_HOST }}"; [ -z "$HOST" ] && HOST="${{ vars.DROPLET_HOST }}" || true
+        USERNAME="${{ secrets.DROPLET_USERNAME }}"; [ -z "$USERNAME" ] && USERNAME="${{ vars.DROPLET_USERNAME }}" || true
+        PASSWORD="${{ secrets.DROPLET_PASSWORD }}"; [ -z "$PASSWORD" ] && PASSWORD="${{ vars.DROPLET_PASSWORD }}" || true
+        echo "HOST=$HOST" >> $GITHUB_ENV
+        echo "USERNAME=$USERNAME" >> $GITHUB_ENV
+        echo "PASSWORD=$PASSWORD" >> $GITHUB_ENV
+
     - name: Validate deployment secrets
       run: |
         MISSING=0
-        if [ -z "${{ secrets.DROPLET_HOST }}" ]; then echo "::error ::Missing required secret DROPLET_HOST"; MISSING=1; fi
-        if [ -z "${{ secrets.DROPLET_USERNAME }}" ]; then echo "::error ::Missing required secret DROPLET_USERNAME"; MISSING=1; fi
-        if [ -z "${{ secrets.DROPLET_PASSWORD }}" ]; then echo "::error ::Missing required secret DROPLET_PASSWORD"; MISSING=1; fi
+        if [ -z "$HOST" ]; then echo "::error ::Missing DROPLET_HOST (not found in environment secrets nor repo variables)"; MISSING=1; fi
+        if [ -z "$USERNAME" ]; then echo "::error ::Missing DROPLET_USERNAME (not found in environment secrets nor repo variables)"; MISSING=1; fi
+        if [ -z "$PASSWORD" ]; then echo "::error ::Missing DROPLET_PASSWORD (not found in environment secrets nor repo variables)"; MISSING=1; fi
         if [ "$MISSING" -ne 0 ]; then echo "Missing required secrets. Configure them in Settings → Secrets and variables → Actions"; exit 1; fi
 
     - name: Debug environment context (no secrets printed)
@@ -57,9 +66,9 @@ jobs:
     - name: Deploy to DigitalOcean Droplet
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.DROPLET_HOST }}
-        username: ${{ secrets.DROPLET_USERNAME }}
-        password: ${{ secrets.DROPLET_PASSWORD }}
+        host: ${{ env.HOST }}
+        username: ${{ env.USERNAME }}
+        password: ${{ env.PASSWORD }}
         envs: DEPLOY_PATH
         script: |
           # Set deployment path (default to project path if not provided)
