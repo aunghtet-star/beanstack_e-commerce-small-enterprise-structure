@@ -20,7 +20,7 @@ class ProductFactory extends Factory
         return [
             'store_id' => 1,
             'name' => Str::title($name),
-            'slug' => Str::slug($name) . '-' . Str::lower(Str::random(4)),
+            'slug' => Str::slug($name).' - '.Str::lower(Str::random(4)),
             'price' => $this->faker->numberBetween(300, 5000),
             'stock' => $this->faker->numberBetween(0, 50),
             'meta' => [
