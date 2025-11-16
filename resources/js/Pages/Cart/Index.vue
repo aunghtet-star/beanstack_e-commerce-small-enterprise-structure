@@ -176,11 +176,12 @@
                                 </div>
                             </div>
 
-                            <button
-                                class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 transition-colors"
+                            <Link
+                                :href="route('checkout.index')"
+                                class="w-full inline-flex items-center justify-center bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 transition-colors"
                             >
                                 Proceed to Checkout
-                            </button>
+                            </Link>
 
                             <Link :href="route('products.index')" class="block text-center text-sm text-indigo-600 hover:text-indigo-700 mt-4">
                                 Continue Shopping

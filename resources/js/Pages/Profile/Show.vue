@@ -16,9 +16,15 @@ defineProps({
 <template>
     <AppLayout title="Profile">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Profile
-            </h2>
+            <div class="flex items-center justify-between">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    BeanStack User Profile
+                </h2>
+                <div class="flex items-center gap-4 text-sm">
+                    <span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded" title="Items in cart">Cart: {{$page.props.cartCount ?? 0}}</span>
+                    <span class="px-2 py-1 bg-pink-50 text-pink-700 rounded" title="Wishlist products">Wishlist: {{$page.props.wishlistCount ?? 0}}</span>
+                </div>
+            </div>
         </template>
 
         <div>

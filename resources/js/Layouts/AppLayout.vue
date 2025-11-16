@@ -58,6 +58,9 @@ const wishlistCount = computed(() => page.props.wishlistCount || 0);
                                 <NavLink :href="route('products.index')" :active="route().current('products.*')">
                                     Shop
                                 </NavLink>
+                                <NavLink v-if="$page.props.auth?.user" :href="route('profile.show')" :active="route().current('profile.show')">
+                                    Profile
+                                </NavLink>
                             </div>
                         </div>
 

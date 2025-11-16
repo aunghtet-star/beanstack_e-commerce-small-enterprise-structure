@@ -83,6 +83,10 @@ const subscribe = () => {
                             </svg>
                             <span v-if="cartCount > 0" class="absolute -top-2 -right-2 bg-indigo-600 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full">{{ cartCount }}</span>
                         </Link>
+
+                        <Link v-if="$page.props.auth?.user" :href="route('profile.show')" :active="route().current('profile.show')">
+                                    Profile
+                        </Link>
                     </div>
                 </div>
             </div>

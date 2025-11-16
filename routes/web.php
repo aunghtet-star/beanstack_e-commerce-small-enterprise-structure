@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\StripeWebhookController;
 
 // Home/Landing Page
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -41,6 +42,11 @@ Route::middleware([
     Route::delete('/wishlist/{wishlist}', [\App\Http\Controllers\WishlistController::class, 'destroy'])->name('wishlist.destroy');
     Route::get('/wishlist/count', [\App\Http\Controllers\WishlistController::class, 'count'])->name('wishlist.count');
     Route::post('/wishlist/check', [\App\Http\Controllers\WishlistController::class, 'check'])->name('wishlist.check');
+
+    // Checkout (Stripe via Cashier)
+    Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/pay', [\App\Http\Controllers\CheckoutController::class, 'pay'])->name('checkout.pay');
+    Route::get('/checkout/success', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 });
 
 // Admin Routes
@@ -53,3 +59,6 @@ Route::middleware([
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])
         ->name('dashboard');
 });
+
+    // Stripe Webhook
+    Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);

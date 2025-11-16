@@ -62,6 +62,11 @@ class HandleInertiaRequests extends Middleware
                 'managesProfilePhotos' => Jetstream::managesProfilePhotos(),
                 'hasAccountDeletionFeatures' => Jetstream::hasAccountDeletionFeatures(),
             ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'message' => fn () => $request->session()->get('message'),
+            ],
         ];
     }
 }
