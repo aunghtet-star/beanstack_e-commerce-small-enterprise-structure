@@ -14,24 +14,43 @@ class ProductController extends Controller
      */
     public function index(Request $request): Response
     {
-        $products = Product::where('stock', '>', 0)
-            ->orderBy('created_at', 'desc')
-            ->paginate(12);
+        $query = Product::where('stock', '>', 0);
+
+        // Apply search filter
+        if ($request->has('search') && $request->search) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'ilike', "%{$searchTerm}%")
+                  ->orWhere('meta->category', 'ilike', "%{$searchTerm}%");
+            });
+        }
+
+        $products = $query->orderBy('created_at', 'desc')->paginate(12);
 
         return Inertia::render('Products/Index', [
             'products' => $products,
             'title' => 'All Products',
+            'filters' => $request->only('search'),
         ]);
     }
 
     /**
      * Display products by category.
      */
-    public function category(string $category): Response
+    public function category(string $category, Request $request): Response
     {
-        $products = Product::where('stock', '>', 0)
-            ->orderBy('created_at', 'desc')
-            ->paginate(12);
+        $query = Product::where('stock', '>', 0);
+
+        // Apply search filter
+        if ($request->has('search') && $request->search) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'ilike', "%{$searchTerm}%")
+                  ->orWhere('meta->category', 'ilike', "%{$searchTerm}%");
+            });
+        }
+
+        $products = $query->orderBy('created_at', 'desc')->paginate(12);
 
         $categoryTitle = ucfirst($category);
 
@@ -39,6 +58,7 @@ class ProductController extends Controller
             'products' => $products,
             'title' => $categoryTitle,
             'category' => $category,
+            'filters' => $request->only('search'),
         ]);
     }
 

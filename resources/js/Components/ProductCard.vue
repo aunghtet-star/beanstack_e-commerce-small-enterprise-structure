@@ -1,7 +1,8 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
-defineProps({
+const props = defineProps({
     product: {
         type: Object,
         required: true,
@@ -11,6 +12,22 @@ defineProps({
         default: false,
     },
 });
+
+const adding = ref(false);
+
+const handleAddToCart = () => {
+    if (props.product.stock <= 0 || adding.value) return;
+    adding.value = true;
+    router.post(route('cart.store'), {
+        product_id: props.product.id,
+        quantity: 1,
+    }, {
+        preserveScroll: true,
+        onFinish: () => {
+            adding.value = false;
+        },
+    });
+};
 </script>
 
 <template>
@@ -57,10 +74,13 @@ defineProps({
         <!-- Add to Cart Button (optional) -->
         <div v-if="showAddToCart" class="p-4 pt-0">
             <button
-                :disabled="product.stock <= 0"
+                @click="handleAddToCart"
+                :disabled="product.stock <= 0 || adding"
                 class="w-full bg-gray-900 text-white py-2 px-4 rounded-md hover:bg-gray-800 transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
-                {{ product.stock <= 0 ? 'Out of Stock' : 'Add to Cart' }}
+                <span v-if="product.stock <= 0">Out of Stock</span>
+                <span v-else-if="adding">Adding...</span>
+                <span v-else>Add to Cart</span>
             </button>
         </div>
     </div>

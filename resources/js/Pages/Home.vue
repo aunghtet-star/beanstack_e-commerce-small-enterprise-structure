@@ -1,10 +1,10 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 import ProductCard from '@/Components/ProductCard.vue';
 import TestimonialCard from '@/Components/TestimonialCard.vue';
 
-defineProps({
+const props = defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
     trendingProducts: Array,
@@ -12,7 +12,12 @@ defineProps({
     testimonials: Array,
 });
 
+const page = usePage();
 const email = ref('');
+
+const isAuthenticated = computed(() => page.props.auth?.user != null);
+const cartCount = computed(() => page.props.cartCount || 0);
+const wishlistCount = computed(() => page.props.wishlistCount || 0);
 
 const subscribe = () => {
     // Handle newsletter subscription
@@ -23,7 +28,7 @@ const subscribe = () => {
 
 <template>
     <div class="min-h-screen bg-gray-50">
-        <Head title="Moderno - Elevate Your Everyday Style" />
+        <Head title="BeanStack - Elevate Your Everyday Style" />
 
         <!-- Navigation -->
         <nav class="bg-white shadow-sm sticky top-0 z-50">
@@ -35,7 +40,7 @@ const subscribe = () => {
                             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                             </svg>
-                            <span class="text-xl font-bold text-gray-900">Moderno</span>
+                            <span class="text-xl font-bold text-gray-900">BeanStack</span>
                         </Link>
                     </div>
 
@@ -57,25 +62,27 @@ const subscribe = () => {
                         </button>
 
                         <!-- User Account -->
-                        <Link v-if="canLogin" :href="route('login')" class="text-gray-600 hover:text-gray-900">
+                        <Link v-if="!isAuthenticated" :href="route('login')" class="text-gray-600 hover:text-gray-900">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                         </Link>
 
                         <!-- Wishlist -->
-                        <button class="text-gray-600 hover:text-gray-900">
+                        <Link v-if="isAuthenticated" :href="route('wishlist.index')" class="text-gray-600 hover:text-gray-900 relative">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                             </svg>
-                        </button>
+                            <span v-if="wishlistCount > 0" class="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full">{{ wishlistCount }}</span>
+                        </Link>
 
                         <!-- Shopping Cart -->
-                        <button class="text-gray-600 hover:text-gray-900">
+                        <Link :href="route('cart.index')" class="text-gray-600 hover:text-gray-900 relative">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                             </svg>
-                        </button>
+                            <span v-if="cartCount > 0" class="absolute -top-2 -right-2 bg-indigo-600 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full">{{ cartCount }}</span>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -259,7 +266,7 @@ const subscribe = () => {
                 </div>
 
                 <div class="mt-8 pt-8 border-t border-gray-200 text-center text-gray-600 text-sm">
-                    <p>© 2024 Moderno. All rights reserved.</p>
+                    <p>© 2024 BeanStack. All rights reserved.</p>
                 </div>
             </div>
         </footer>
