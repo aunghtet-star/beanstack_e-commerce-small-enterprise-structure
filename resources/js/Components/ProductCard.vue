@@ -19,8 +19,8 @@ defineProps({
             <!-- Product Image -->
             <div class="aspect-square overflow-hidden bg-gray-100">
                 <img
-                    v-if="product.image_url"
-                    :src="product.image_url"
+                    v-if="product.meta?.image_url"
+                    :src="product.meta.image_url"
                     :alt="product.name"
                     class="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
                 />

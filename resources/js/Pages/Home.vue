@@ -41,9 +41,10 @@ const subscribe = () => {
 
                     <!-- Center Navigation -->
                     <div class="hidden md:flex space-x-8">
-                        <Link href="/men" class="text-gray-700 hover:text-gray-900 font-medium">Men</Link>
-                        <Link href="/women" class="text-gray-700 hover:text-gray-900 font-medium">Women</Link>
-                        <Link href="/new-arrivals" class="text-gray-700 hover:text-gray-900 font-medium">New Arrivals</Link>
+                        <Link href="/products" class="text-gray-700 hover:text-gray-900 font-medium">Shop</Link>
+                        <Link href="/category/men" class="text-gray-700 hover:text-gray-900 font-medium">Men</Link>
+                        <Link href="/category/women" class="text-gray-700 hover:text-gray-900 font-medium">Women</Link>
+                        <Link href="/category/new-arrivals" class="text-gray-700 hover:text-gray-900 font-medium">New Arrivals</Link>
                     </div>
 
                     <!-- Right Navigation -->
@@ -91,7 +92,7 @@ const subscribe = () => {
                         Discover our new collection of timeless pieces, crafted for the modern individual.
                     </p>
                     <Link
-                        href="/shop"
+                        href="/products"
                         class="inline-block bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-semibold px-8 py-3 rounded-md transition-colors duration-200"
                     >
                         Shop The Collection

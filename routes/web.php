@@ -7,6 +7,17 @@ use Inertia\Inertia;
 // Home/Landing Page
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+// Product Routes
+Route::get('/products', [\App\Http\Controllers\ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{product}', [\App\Http\Controllers\ProductController::class, 'show'])->name('products.show');
+Route::get('/category/{category}', [\App\Http\Controllers\ProductController::class, 'category'])->name('products.category');
+
+// Alias routes for compatibility
+Route::get('/shop', fn() => redirect()->route('products.index'));
+Route::get('/men', fn() => redirect()->route('products.category', 'men'));
+Route::get('/women', fn() => redirect()->route('products.category', 'women'));
+Route::get('/new-arrivals', fn() => redirect()->route('products.category', 'new-arrivals'));
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

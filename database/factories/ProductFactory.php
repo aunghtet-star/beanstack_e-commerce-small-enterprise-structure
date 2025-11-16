@@ -16,6 +16,18 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         $name = $this->faker->unique()->words(3, true);
+        
+        // Sample product images from Unsplash
+        $images = [
+            'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400',
+            'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?w=400',
+            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+            'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400',
+            'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400',
+            'https://images.unsplash.com/photo-1560343090-f0409e92791a?w=400',
+            'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400',
+            'https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=400',
+        ];
 
         return [
             'store_id' => 1,
@@ -27,6 +39,7 @@ class ProductFactory extends Factory
             'meta' => [
                 'color' => $this->faker->safeColorName(),
                 'weight' => $this->faker->numberBetween(250, 1000),
+                'image_url' => $this->faker->randomElement($images),
             ],
         ];
     }
