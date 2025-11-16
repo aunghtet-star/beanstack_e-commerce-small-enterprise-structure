@@ -4,21 +4,26 @@ This repository uses GitHub Actions for automated testing, code quality checks, 
 
 ## 🔄 CI/CD Flow
 
-The CI/CD pipeline follows a **quality gate** approach:
+The CI/CD pipeline follows a **strict quality gate** approach:
 
 ```
-Push to main/develop ──┬─► Laravel Tests ──┬─► Code Quality ──┬─► Deploy to Production
-                       │                   │                   │
-                       └─► ❌ Fail         └─► ❌ Fail         └─► ✅ Deploy
+Push to main ──┬─► Laravel Tests ──┬─► Code Quality ──┬─► Quality Gate Check ──┬─► Deploy to Production
+               │                  │                  │                        │
+               └─► ❌ Fail        └─► ❌ Fail        └─► ❌ Block Deployment   └─► ✅ Deploy + Auto Migrate
 ```
 
-### Quality Gates
-1. **Laravel Tests** must pass (including 80%+ coverage)
-2. **Code Quality** checks must pass (Pint, PHPStan, Security Audit)
-3. **Only then** does deployment proceed automatically
+### Quality Gates Process
+1. **Laravel Tests** run automatically on push to main
+2. **Code Quality** checks run automatically on push to main  
+3. **Deploy workflow** checks the status of both prerequisite workflows
+4. **Only if both pass**: Deployment proceeds with automatic database migration
+5. **If either fails**: Deployment is blocked and the workflow fails with clear error message
 
-### Manual Deployment
-You can still trigger deployment manually using the workflow dispatch, but this bypasses the quality gates and should only be used for emergencies.
+### Auto-Migration Safety
+- Database migrations run automatically during successful deployments
+- Uses `--force` flag to ensure migrations run in production
+- Prevents deployment with outdated database schema
+- All migrations are tracked and version-controlled
 
 ## 🚀 Setup Instructions
 Runs on every push and pull request to `main` and `develop` branches.
@@ -47,21 +52,28 @@ Ensures code meets quality standards.
 - Pull requests to `main` or `develop`
 
 ### 3. **Deploy to Production** (`.github/workflows/deploy.yml`)
-Automated deployment that only runs when both tests and code quality checks pass.
+Automated deployment with strict quality gates and auto-migration.
 
 **What it does:**
-- Checks if Laravel Tests and Code Quality workflows completed successfully
-- Builds production-ready assets
-- Deploys to DigitalOcean Droplet via SSH
-- Runs database migrations and cache optimizations
+- Checks the latest status of both Laravel Tests and Code Quality workflows
+- Only proceeds with deployment if both quality gates pass
+- Builds production-ready assets and deploys to DigitalOcean Droplet
+- **Automatically runs database migrations** during deployment
+- Fails the entire workflow if quality checks fail
 
 **Triggers:**
-- **Automatic**: When both "Laravel Tests" and "Code Quality" workflows complete successfully on the `main` branch
-- **Manual**: Workflow dispatch for emergency deployments
+- Push to `main` branch (after quality checks complete)
+- Manual workflow dispatch for emergency deployments
 
-**Dependencies:**
-- Requires successful completion of both Laravel Tests and Code Quality workflows
-- Only deploys code that has passed all quality gates
+**Quality Gates:**
+- ✅ **Laravel Tests** must have completed successfully
+- ✅ **Code Quality** checks must have completed successfully
+- ❌ If either fails, deployment is blocked and workflow fails
+
+**Auto-Migration Features:**
+- Runs `php artisan migrate --force` automatically
+- Ensures database schema is always up-to-date
+- Prevents deployment with outdated database structure
 
 ## 🚀 Setup Instructions
 
@@ -137,10 +149,17 @@ The deploy workflow is configured for **DigitalOcean Droplet** deployment using 
 2. Pulls latest code from `main` branch
 3. Installs production dependencies
 4. Builds frontend assets
-5. Runs database migrations
+5. **Automatically runs database migrations** (`php artisan migrate --force`)
 6. Clears and caches Laravel configurations
 7. Restarts queue workers
 8. Sets proper file permissions
+
+### Auto-Migration Details:
+- **Automatic**: Migrations run on every successful deployment
+- **Forced**: Uses `--force` flag for production safety
+- **Versioned**: All migrations are tracked in your repository
+- **Safe**: Only runs after all quality checks pass
+- **Logged**: Migration output is visible in deployment logs
 
 ### Prerequisites on Your Droplet:
 - Git repository cloned at deployment path
@@ -201,11 +220,21 @@ composer audit           # Check security
 ```
 
 ### Deployment Not Triggering
-- Check that both Laravel Tests and Code Quality workflows completed successfully
-- Verify the push was made to the `main` branch
-- Look for workflow dependency errors in the Actions tab
+- Check that both Laravel Tests and Code Quality workflows completed successfully on the main branch
+- Verify the push was made directly to the `main` branch
+- Look for "Quality Gate Check" failures in the deployment workflow logs
 
-### Deployment Issues
+### Quality Gates Failing
+- Ensure Laravel Tests workflow shows "success" status
+- Ensure Code Quality workflow shows "success" status  
+- Check that workflows completed recently (within the same push cycle)
+- Manual workflow dispatch bypasses quality gates
+
+### Migration Issues During Deployment
+- Check database connection in production `.env`
+- Verify database user has migration permissions
+- Review migration logs in deployment output
+- Ensure no breaking changes in migrations
 - Verify all secrets are configured
 - Check server SSH access
 - Ensure deployment paths are correct

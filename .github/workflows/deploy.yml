@@ -1,11 +1,8 @@
 name: Deploy to Production
 
 on:
-  workflow_run:
-    workflows: ["Laravel Tests", "Code Quality"]
-    types:
-      - completed
-    branches: [main]
+  push:
+    branches: [ main ]
   workflow_dispatch:
     inputs:
       environment:
@@ -14,25 +11,47 @@ on:
         default: "production"
 
 jobs:
-  check-workflows:
+  check-quality-gates:
     runs-on: ubuntu-latest
     outputs:
-      should-deploy: ${{ steps.check.outputs.should-deploy }}
+      tests-passed: ${{ steps.check-tests.outputs.passed }}
+      quality-passed: ${{ steps.check-quality.outputs.passed }}
     steps:
-      - name: Check if all required workflows succeeded
-        id: check
+      - name: Check Laravel Tests Status
+        id: check-tests
         run: |
-          if [ "${{ github.event.workflow_run.conclusion }}" == "success" ]; then
-            echo "should-deploy=true" >> $GITHUB_OUTPUT
-            echo "✅ All required workflows (Laravel Tests and Code Quality) completed successfully"
+          # Get the latest run of Laravel Tests workflow
+          RUN_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/laravel-tests.yml/runs?per_page=1&branch=main" | \
+            jq -r '.workflow_runs[0].conclusion // "unknown"')
+
+          if [ "$RUN_ID" = "success" ]; then
+            echo "passed=true" >> $GITHUB_OUTPUT
+            echo "✅ Laravel Tests passed"
           else
-            echo "should-deploy=false" >> $GITHUB_OUTPUT
-            echo "❌ Required workflows did not complete successfully. Conclusion: ${{ github.event.workflow_run.conclusion }}"
+            echo "passed=false" >> $GITHUB_OUTPUT
+            echo "❌ Laravel Tests failed or not found (status: $RUN_ID)"
+          fi
+
+      - name: Check Code Quality Status
+        id: check-quality
+        run: |
+          # Get the latest run of Code Quality workflow
+          RUN_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/code-quality.yml/runs?per_page=1&branch=main" | \
+            jq -r '.workflow_runs[0].conclusion // "unknown"')
+
+          if [ "$RUN_ID" = "success" ]; then
+            echo "passed=true" >> $GITHUB_OUTPUT
+            echo "✅ Code Quality checks passed"
+          else
+            echo "passed=false" >> $GITHUB_OUTPUT
+            echo "❌ Code Quality checks failed or not found (status: $RUN_ID)"
           fi
 
   deploy:
-    needs: check-workflows
-    if: needs.check-workflows.outputs.should-deploy == 'true'
+    needs: check-quality-gates
+    if: needs.check-quality-gates.outputs.tests-passed == 'true' && needs.check-quality-gates.outputs.quality-passed == 'true'
     runs-on: ubuntu-latest
     # Uses manual input if provided, otherwise defaults to 'production'
     environment: Bean
@@ -40,9 +59,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        # For workflow_run, we need to checkout the branch that triggered the original workflows
-        ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -110,7 +126,7 @@ jobs:
           else
             echo "Resetting repository to origin/main..."
             git fetch origin main
-            git reset --hard ${{ github.event.workflow_run.head_sha || github.sha }}
+            git reset --hard ${{ github.sha }}
             git clean -fd
           fi
           
@@ -118,7 +134,8 @@ jobs:
           composer install --no-interaction --no-dev --optimize-autoloader
           npm ci && npm run build
           
-          # Run migrations
+          # Auto migrate database
+          echo "🚀 Running database migrations..."
           php artisan migrate --force
           
           # Clear and cache configurations
@@ -142,6 +159,16 @@ jobs:
       if: success()
       run: echo "✅ Deployment to DigitalOcean completed successfully!"
       
-    - name: Deployment Failure Notification
-      if: failure()
-      run: echo "❌ Deployment failed! Check the logs above."
+  fail-deployment:
+    needs: check-quality-gates
+    if: needs.check-quality-gates.outputs.tests-passed != 'true' || needs.check-quality-gates.outputs.quality-passed != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deployment Blocked
+        run: |
+          echo "❌ Deployment blocked due to failed quality gates!"
+          echo "Laravel Tests: ${{ needs.check-quality-gates.outputs.tests-passed == 'true' && '✅ PASSED' || '❌ FAILED' }}"
+          echo "Code Quality: ${{ needs.check-quality-gates.outputs.quality-passed == 'true' && '✅ PASSED' || '❌ FAILED' }}"
+          echo ""
+          echo "Please fix the failing checks and push again to trigger deployment."
+          exit 1
