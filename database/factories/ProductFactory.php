@@ -29,6 +29,9 @@ class ProductFactory extends Factory
             'https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=400',
         ];
 
+        // Product categories
+        $categories = ['men', 'women', 'unisex'];
+
         return [
             'store_id' => 1,
             'name' => Str::title($name),
@@ -37,6 +40,7 @@ class ProductFactory extends Factory
             'stock' => $this->faker->numberBetween(0, 50),
             'is_featured' => $this->faker->boolean(30), // 30% chance of being featured
             'meta' => [
+                'category' => $this->faker->randomElement($categories),
                 'color' => $this->faker->safeColorName(),
                 'weight' => $this->faker->numberBetween(250, 1000),
                 'image_url' => $this->faker->randomElement($images),

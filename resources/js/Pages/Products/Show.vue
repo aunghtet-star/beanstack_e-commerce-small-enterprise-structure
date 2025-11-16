@@ -1,7 +1,8 @@
 <script setup>
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
-import ProductCard from '@/Components/ProductCard.vue';
+import ProductCard from '@/Components/Custom/ProductCard.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
     product: Object,
@@ -80,51 +81,7 @@ const toggleWishlist = () => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-50">
-        <Head :title="product.name" />
-
-        <!-- Navigation -->
-        <nav class="bg-white shadow-sm sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center">
-                        <Link href="/" class="flex items-center space-x-2">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                            </svg>
-                            <span class="text-xl font-bold text-gray-900">BeanStack</span>
-                        </Link>
-                    </div>
-
-                    <div class="hidden md:flex space-x-8">
-                        <Link href="/products" class="text-gray-700 hover:text-gray-900 font-medium">Shop</Link>
-                        <Link href="/category/men" class="text-gray-700 hover:text-gray-900 font-medium">Men</Link>
-                        <Link href="/category/women" class="text-gray-700 hover:text-gray-900 font-medium">Women</Link>
-                    </div>
-
-                    <div class="flex items-center space-x-6">
-                        <Link v-if="!isAuthenticated" :href="route('login')" class="text-gray-600 hover:text-gray-900">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
-                        </Link>
-                        <Link v-if="isAuthenticated" :href="route('wishlist.index')" class="text-gray-600 hover:text-gray-900 relative">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                            </svg>
-                            <span v-if="wishlistCount > 0" class="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full">{{ wishlistCount }}</span>
-                        </Link>
-                        <Link :href="route('cart.index')" class="text-gray-600 hover:text-gray-900 relative">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                            </svg>
-                            <span v-if="cartCount > 0" class="absolute -top-2 -right-2 bg-indigo-600 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full">{{ cartCount }}</span>
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
+    <AppLayout :title="product.name">
         <!-- Breadcrumb -->
         <div class="bg-white border-b border-gray-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -265,5 +222,5 @@ const toggleWishlist = () => {
                 </div>
             </div>
         </div>
-    </div>
+    </AppLayout>
 </template>

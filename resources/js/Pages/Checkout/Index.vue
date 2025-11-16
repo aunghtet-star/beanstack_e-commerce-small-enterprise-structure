@@ -1,7 +1,8 @@
 <script setup>
-import { Head, Link, usePage, router } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import { ref, computed, onMounted } from 'vue';
 import { loadStripe } from '@stripe/stripe-js';
+import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
   cartItems: Array,
@@ -58,27 +59,7 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <Head title="Checkout" />
-
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <div class="flex items-center">
-            <Link href="/" class="flex items-center space-x-2">
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-              </svg>
-              <span class="text-xl font-bold text-gray-900">BeanStack</span>
-            </Link>
-          </div>
-          <div>
-            <Link :href="route('cart.index')" class="text-sm text-indigo-600 hover:text-indigo-700">Back to Cart</Link>
-          </div>
-        </div>
-      </div>
-    </nav>
-
+  <AppLayout title="Checkout">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Payment Form -->
@@ -120,5 +101,5 @@ const submit = async () => {
         </div>
       </div>
     </div>
-  </div>
+  </AppLayout>
 </template>

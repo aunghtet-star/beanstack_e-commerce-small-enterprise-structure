@@ -41,6 +41,26 @@ class ProductController extends Controller
     {
         $query = Product::where('stock', '>', 0);
 
+        // Apply category filter
+        switch ($category) {
+            case 'men':
+                $query->where('meta->category', 'men');
+                $categoryTitle = 'Men';
+                break;
+            case 'women':
+                $query->where('meta->category', 'women');
+                $categoryTitle = 'Women';
+                break;
+            case 'new-arrivals':
+                // Products created within the last 30 days
+                $query->where('created_at', '>=', now()->subDays(30));
+                $categoryTitle = 'New Arrivals';
+                break;
+            default:
+                $categoryTitle = ucfirst($category);
+                break;
+        }
+
         // Apply search filter
         if ($request->has('search') && $request->search) {
             $searchTerm = $request->search;
@@ -51,8 +71,6 @@ class ProductController extends Controller
         }
 
         $products = $query->orderBy('created_at', 'desc')->paginate(12);
-
-        $categoryTitle = ucfirst($category);
 
         return Inertia::render('Products/Index', [
             'products' => $products,
