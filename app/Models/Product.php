@@ -30,6 +30,7 @@ class Product extends Model
         'slug',
         'price',
         'stock',
+        'is_featured',
         'meta',
     ];
 
@@ -39,5 +40,46 @@ class Product extends Model
     protected $casts = [
         'meta' => 'array',
         'price' => 'decimal:2',
+        'is_featured' => 'boolean',
     ];
+
+    /**
+     * Get the product's image URL.
+     */
+    public function getImageUrlAttribute()
+    {
+        return $this->meta['image_url'] ?? 'https://via.placeholder.com/400';
+    }
+
+    /**
+     * Get the product's category.
+     */
+    public function getCategoryAttribute()
+    {
+        return $this->meta['category'] ?? 'Uncategorized';
+    }
+
+    /**
+     * Get the stock quantity (alias for compatibility).
+     */
+    public function getStockQuantityAttribute()
+    {
+        return $this->stock;
+    }
+
+    /**
+     * Cart items for this product.
+     */
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    /**
+     * Wishlist entries for this product.
+     */
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
 }

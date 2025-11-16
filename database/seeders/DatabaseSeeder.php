@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Product;
 use App\Models\User;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,21 +13,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
+        // Seed admin and regular users
+        $this->call(AdminUserSeeder::class);
+
+        // Seed products
+        $this->call(ProductSeeder::class);
+
+        // User::factory(10)->withPersonalTeam()->create();
+
+        User::factory()->withPersonalTeam()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
-        ]);
-
-        Product::factory()->create([
-            'name' => 'BeanStack House Blend',
-            'slug' => 'beanstack-house-blend',
-            'price' => 1599,
-            'stock' => 25,
-            'meta' => [
-                'origin' => 'Colombia',
-                'weight' => 1000,
-                'roast' => 'medium',
-            ],
         ]);
     }
 }

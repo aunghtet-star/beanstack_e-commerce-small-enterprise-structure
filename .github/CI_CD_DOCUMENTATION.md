@@ -2,9 +2,25 @@
 
 This repository uses GitHub Actions for automated testing, code quality checks, and deployment.
 
-## 🔄 Workflows
+## 🔄 CI/CD Flow
 
-### 1. **Laravel Tests** (`.github/workflows/laravel-tests.yml`)
+The CI/CD pipeline follows a **quality gate** approach:
+
+```
+Push to main/develop ──┬─► Laravel Tests ──┬─► Code Quality ──┬─► Deploy to Production
+                       │                   │                   │
+                       └─► ❌ Fail         └─► ❌ Fail         └─► ✅ Deploy
+```
+
+### Quality Gates
+1. **Laravel Tests** must pass (including 80%+ coverage)
+2. **Code Quality** checks must pass (Pint, PHPStan, Security Audit)
+3. **Only then** does deployment proceed automatically
+
+### Manual Deployment
+You can still trigger deployment manually using the workflow dispatch, but this bypasses the quality gates and should only be used for emergencies.
+
+## 🚀 Setup Instructions
 Runs on every push and pull request to `main` and `develop` branches.
 
 **What it does:**
@@ -31,16 +47,21 @@ Ensures code meets quality standards.
 - Pull requests to `main` or `develop`
 
 ### 3. **Deploy to Production** (`.github/workflows/deploy.yml`)
-Automated deployment workflow (currently template-based).
+Automated deployment that only runs when both tests and code quality checks pass.
 
 **What it does:**
+- Checks if Laravel Tests and Code Quality workflows completed successfully
 - Builds production-ready assets
-- Installs production dependencies (no dev packages)
-- Provides deployment templates for common platforms
+- Deploys to DigitalOcean Droplet via SSH
+- Runs database migrations and cache optimizations
 
 **Triggers:**
-- Push to `main`
-- Manual workflow dispatch
+- **Automatic**: When both "Laravel Tests" and "Code Quality" workflows complete successfully on the `main` branch
+- **Manual**: Workflow dispatch for emergency deployments
+
+**Dependencies:**
+- Requires successful completion of both Laravel Tests and Code Quality workflows
+- Only deploys code that has passed all quality gates
 
 ## 🚀 Setup Instructions
 
@@ -178,6 +199,11 @@ Run locally:
 ./vendor/bin/pint        # Fix code style
 composer audit           # Check security
 ```
+
+### Deployment Not Triggering
+- Check that both Laravel Tests and Code Quality workflows completed successfully
+- Verify the push was made to the `main` branch
+- Look for workflow dependency errors in the Actions tab
 
 ### Deployment Issues
 - Verify all secrets are configured
