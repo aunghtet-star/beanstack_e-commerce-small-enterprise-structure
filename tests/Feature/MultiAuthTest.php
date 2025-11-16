@@ -29,7 +29,7 @@ class MultiAuthTest extends TestCase
     }
 
     /** @test */
-    public function regular_user_is_redirected_to_dashboard_after_login(): void
+    public function regular_user_is_redirected_to_home_after_login(): void
     {
         $user = User::factory()->withPersonalTeam()->create([
             'email' => 'user@test.com',
@@ -42,7 +42,7 @@ class MultiAuthTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(route('home'));
         $this->assertAuthenticatedAs($user);
     }
 

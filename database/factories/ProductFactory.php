@@ -23,6 +23,7 @@ class ProductFactory extends Factory
             'slug' => Str::slug($name).' - '.Str::lower(Str::random(4)),
             'price' => $this->faker->numberBetween(300, 5000),
             'stock' => $this->faker->numberBetween(0, 50),
+            'is_featured' => $this->faker->boolean(30), // 30% chance of being featured
             'meta' => [
                 'color' => $this->faker->safeColorName(),
                 'weight' => $this->faker->numberBetween(250, 1000),
@@ -33,5 +34,10 @@ class ProductFactory extends Factory
     public function zeroStock(): self
     {
         return $this->state(fn () => ['stock' => 0]);
+    }
+
+    public function featured(): self
+    {
+        return $this->state(fn () => ['is_featured' => true]);
     }
 }

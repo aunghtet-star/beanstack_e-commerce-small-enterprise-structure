@@ -30,6 +30,7 @@ class Product extends Model
         'slug',
         'price',
         'stock',
+        'is_featured',
         'meta',
     ];
 
@@ -39,5 +40,6 @@ class Product extends Model
     protected $casts = [
         'meta' => 'array',
         'price' => 'decimal:2',
+        'is_featured' => 'boolean',
     ];
 }
