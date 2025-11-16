@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Wishlist;
 use App\Models\Product;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -39,7 +39,7 @@ class WishlistController extends Controller
                     $exists = Wishlist::where('user_id', Auth::id())
                         ->where('product_id', $value)
                         ->exists();
-                    
+
                     if ($exists) {
                         $fail('Product is already in your wishlist.');
                     }

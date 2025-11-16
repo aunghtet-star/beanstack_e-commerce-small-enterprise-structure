@@ -4,17 +4,13 @@ namespace Tests\Unit;
 
 use App\Models\Order;
 use App\Models\Payment;
-use App\Models\Product;
-use App\Models\CartItem;
 use App\Models\User;
-use App\Services\CartService;
-use App\Services\OrderService;
 use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-use Mockery;
-use Laravel\Cashier\Exceptions\IncompletePayment;
 use Illuminate\Support\Facades\Log;
+use Laravel\Cashier\Exceptions\IncompletePayment;
+use Mockery;
+use Tests\TestCase;
 
 class PaymentServiceTest extends TestCase
 {
@@ -48,7 +44,7 @@ class PaymentServiceTest extends TestCase
             'status' => 'captured',
         ]);
 
-        $service = new PaymentService();
+        $service = new PaymentService;
         $service->markPaymentFailed('pi_status_test');
         $this->assertEquals('failed', $payment->fresh()->status);
 
@@ -71,7 +67,7 @@ class PaymentServiceTest extends TestCase
             ->with($paymentMethod)
             ->andReturn(true);
 
-        $service = new PaymentService();
+        $service = new PaymentService;
         $service->savePaymentMethodAsDefault($userMock, $paymentMethod);
 
         // Test passes if no exception is thrown
@@ -98,7 +94,7 @@ class PaymentServiceTest extends TestCase
                 'error' => 'Stripe API error',
             ]);
 
-        $service = new PaymentService();
+        $service = new PaymentService;
         $service->savePaymentMethodAsDefault($userMock, $paymentMethod);
 
         // Test passes if no exception is thrown (error is logged but not rethrown)
@@ -130,7 +126,7 @@ class PaymentServiceTest extends TestCase
             ])
             ->andReturn($cashierPaymentMock);
 
-        $service = new PaymentService();
+        $service = new PaymentService;
         $payment = $service->chargeCustomer($userMock, $amountCents, $paymentMethod, $order);
 
         // Assert payment record was created
@@ -159,7 +155,7 @@ class PaymentServiceTest extends TestCase
             ->once()
             ->andThrow(new IncompletePayment($cashierPaymentMock, 'Payment requires additional action'));
 
-        $service = new PaymentService();
+        $service = new PaymentService;
 
         $this->expectException(IncompletePayment::class);
         $this->expectExceptionMessage('Payment requires additional action');

@@ -8,7 +8,6 @@ use App\Models\Product;
 use App\Services\CartService;
 use App\Services\OrderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class OrderServiceTest extends TestCase
@@ -17,8 +16,8 @@ class OrderServiceTest extends TestCase
 
     public function test_create_order_from_cart_persists_items_and_adjusts_stock(): void
     {
-        $cartService = new CartService();
-        $orderService = new OrderService();
+        $cartService = new CartService;
+        $orderService = new OrderService;
         $sessionId = $cartService->getSessionId();
 
         $product = Product::factory()->create(['stock' => 10, 'price' => 100]);
@@ -43,14 +42,14 @@ class OrderServiceTest extends TestCase
     public function test_create_order_from_empty_cart_throws(): void
     {
         $this->expectException(\RuntimeException::class);
-        $orderService = new OrderService();
+        $orderService = new OrderService;
         $orderService->createOrderFromCart('missing-session', 'buyer@example.com');
     }
 
     public function test_mark_order_paid_and_cancelled(): void
     {
-        $cartService = new CartService();
-        $orderService = new OrderService();
+        $cartService = new CartService;
+        $orderService = new OrderService;
         $sessionId = $cartService->getSessionId();
         $product = Product::factory()->create(['stock' => 5, 'price' => 50]);
         CartItem::create([

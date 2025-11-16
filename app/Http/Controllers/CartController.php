@@ -16,9 +16,10 @@ class CartController extends Controller
      */
     private function getSessionId(): string
     {
-        if (!Session::has('cart_session_id')) {
+        if (! Session::has('cart_session_id')) {
             Session::put('cart_session_id', Session::getId());
         }
+
         return Session::get('cart_session_id');
     }
 
@@ -28,7 +29,7 @@ class CartController extends Controller
     public function index(): Response
     {
         $sessionId = $this->getSessionId();
-        
+
         $cartItems = CartItem::where('session_id', $sessionId)
             ->with('product')
             ->get();
@@ -99,7 +100,7 @@ class CartController extends Controller
         ]);
 
         $sessionId = $this->getSessionId();
-        
+
         if ($cartItem->session_id !== $sessionId) {
             abort(403);
         }
@@ -119,7 +120,7 @@ class CartController extends Controller
     public function destroy(CartItem $cartItem)
     {
         $sessionId = $this->getSessionId();
-        
+
         if ($cartItem->session_id !== $sessionId) {
             abort(403);
         }
@@ -135,7 +136,7 @@ class CartController extends Controller
     public function count()
     {
         $sessionId = $this->getSessionId();
-        
+
         $count = CartItem::where('session_id', $sessionId)->sum('quantity');
 
         return response()->json(['count' => $count]);

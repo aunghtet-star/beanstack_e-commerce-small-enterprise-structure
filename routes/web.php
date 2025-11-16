@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\StripeWebhookController;
+use Illuminate\Support\Facades\Route;
 
 // Home/Landing Page
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -21,10 +19,10 @@ Route::delete('/cart/{cartItem}', [\App\Http\Controllers\CartController::class, 
 Route::get('/cart/count', [\App\Http\Controllers\CartController::class, 'count'])->name('cart.count');
 
 // Alias routes for compatibility
-Route::get('/shop', fn() => redirect()->route('products.index'));
-Route::get('/men', fn() => redirect()->route('products.category', 'men'));
-Route::get('/women', fn() => redirect()->route('products.category', 'women'));
-Route::get('/new-arrivals', fn() => redirect()->route('products.category', 'new-arrivals'));
+Route::get('/shop', fn () => redirect()->route('products.index'));
+Route::get('/men', fn () => redirect()->route('products.category', 'men'));
+Route::get('/women', fn () => redirect()->route('products.category', 'women'));
+Route::get('/new-arrivals', fn () => redirect()->route('products.category', 'new-arrivals'));
 
 Route::middleware([
     'auth:sanctum',
@@ -60,5 +58,5 @@ Route::middleware([
         ->name('dashboard');
 });
 
-    // Stripe Webhook
-    Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+// Stripe Webhook
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);

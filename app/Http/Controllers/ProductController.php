@@ -19,9 +19,9 @@ class ProductController extends Controller
         // Apply search filter
         if ($request->has('search') && $request->search) {
             $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'ilike', "%{$searchTerm}%")
-                  ->orWhere('meta->category', 'ilike', "%{$searchTerm}%");
+                    ->orWhere('meta->category', 'ilike', "%{$searchTerm}%");
             });
         }
 
@@ -64,9 +64,9 @@ class ProductController extends Controller
         // Apply search filter
         if ($request->has('search') && $request->search) {
             $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'ilike', "%{$searchTerm}%")
-                  ->orWhere('meta->category', 'ilike', "%{$searchTerm}%");
+                    ->orWhere('meta->category', 'ilike', "%{$searchTerm}%");
             });
         }
 

@@ -6,7 +6,6 @@ use App\Http\Middleware\IsAdmin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class IsAdminMiddlewareTest extends TestCase
@@ -20,7 +19,7 @@ class IsAdminMiddlewareTest extends TestCase
         $this->actingAs($admin);
 
         $request = Request::create('/admin/dashboard', 'GET');
-        $middleware = new IsAdmin();
+        $middleware = new IsAdmin;
 
         $response = $middleware->handle($request, function ($req) {
             return response('Success', 200);
@@ -37,10 +36,10 @@ class IsAdminMiddlewareTest extends TestCase
         $this->actingAs($user);
 
         $request = Request::create('/admin/dashboard', 'GET');
-        $middleware = new IsAdmin();
+        $middleware = new IsAdmin;
 
         $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
-        
+
         $middleware->handle($request, function ($req) {
             return response('Success', 200);
         });
@@ -50,10 +49,10 @@ class IsAdminMiddlewareTest extends TestCase
     public function it_blocks_unauthenticated_users(): void
     {
         $request = Request::create('/admin/dashboard', 'GET');
-        $middleware = new IsAdmin();
+        $middleware = new IsAdmin;
 
         $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
-        
+
         $middleware->handle($request, function ($req) {
             return response('Success', 200);
         });

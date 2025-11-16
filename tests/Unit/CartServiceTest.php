@@ -14,7 +14,7 @@ class CartServiceTest extends TestCase
 
     public function test_get_session_id_sets_and_returns_value(): void
     {
-        $service = new CartService();
+        $service = new CartService;
         $id = $service->getSessionId();
         $this->assertNotEmpty($id);
         $this->assertEquals($id, $service->getSessionId());
@@ -22,7 +22,7 @@ class CartServiceTest extends TestCase
 
     public function test_clear_cart_removes_items(): void
     {
-        $service = new CartService();
+        $service = new CartService;
         $sessionId = $service->getSessionId();
         $product = Product::factory()->create(['stock' => 10]);
         CartItem::create([

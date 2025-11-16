@@ -18,7 +18,7 @@ class OrderFactory extends Factory
     {
         return [
             'id' => (string) \Illuminate\Support\Str::ulid(),
-            'number' => 'ORD' . $this->faker->unique()->numberBetween(100000000, 999999999),
+            'number' => 'ORD'.$this->faker->unique()->numberBetween(100000000, 999999999),
             'customer_email' => $this->faker->safeEmail(),
             'currency' => 'USD',
             'total' => $this->faker->numberBetween(1000, 10000), // $10.00 to $100.00

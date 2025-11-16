@@ -17,8 +17,7 @@ class CheckoutController extends Controller
         private readonly CartService $cartService,
         private readonly OrderService $orderService,
         private readonly PaymentService $paymentService
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): Response
     {
@@ -52,7 +51,7 @@ class CheckoutController extends Controller
         try {
             // Create order from cart
             $order = $this->orderService->createOrderFromCart($sessionId, $user->email);
-            
+
             // Process payment
             $this->paymentService->chargeCustomer(
                 $user,
@@ -62,7 +61,7 @@ class CheckoutController extends Controller
             );
 
             // Save payment method if requested
-            if (!empty($validated['save_card'])) {
+            if (! empty($validated['save_card'])) {
                 $this->paymentService->savePaymentMethodAsDefault($user, $validated['payment_method']);
             }
 
@@ -74,7 +73,7 @@ class CheckoutController extends Controller
 
             return redirect()->route('checkout.success')
                 ->with('success', 'Payment successful. Thank you for your order!');
-                
+
         } catch (IncompletePayment $e) {
             return redirect()->route(
                 'cashier.payment',

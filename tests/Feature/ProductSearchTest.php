@@ -16,7 +16,7 @@ class ProductSearchTest extends TestCase
             'name' => 'Blue Cotton T-Shirt',
             'stock' => 10,
         ]);
-        
+
         Product::factory()->create([
             'name' => 'Red Wool Sweater',
             'stock' => 5,
@@ -80,7 +80,7 @@ class ProductSearchTest extends TestCase
             'name' => 'Blue Product',
             'stock' => 10,
         ]);
-        
+
         Product::factory()->count(5)->create([
             'name' => 'Red Product',
             'stock' => 10,

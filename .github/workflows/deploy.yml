@@ -1,8 +1,11 @@
 name: Deploy to Production
 
 on:
-  push:
-    branches: [ main ]
+  workflow_run:
+    workflows: ["Laravel Tests", "Code Quality"]
+    types:
+      - completed
+    branches: [main]
   workflow_dispatch:
     inputs:
       environment:
@@ -11,7 +14,25 @@ on:
         default: "production"
 
 jobs:
+  check-workflows:
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.check.outputs.should-deploy }}
+    steps:
+      - name: Check if all required workflows succeeded
+        id: check
+        run: |
+          if [ "${{ github.event.workflow_run.conclusion }}" == "success" ]; then
+            echo "should-deploy=true" >> $GITHUB_OUTPUT
+            echo "✅ All required workflows (Laravel Tests and Code Quality) completed successfully"
+          else
+            echo "should-deploy=false" >> $GITHUB_OUTPUT
+            echo "❌ Required workflows did not complete successfully. Conclusion: ${{ github.event.workflow_run.conclusion }}"
+          fi
+
   deploy:
+    needs: check-workflows
+    if: needs.check-workflows.outputs.should-deploy == 'true'
     runs-on: ubuntu-latest
     # Uses manual input if provided, otherwise defaults to 'production'
     environment: Bean
@@ -19,6 +40,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        # For workflow_run, we need to checkout the branch that triggered the original workflows
+        ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -69,7 +93,7 @@ jobs:
         host: ${{ env.HOST }}
         username: ${{ env.USERNAME }}
         password: ${{ env.PASSWORD }}
-        envs: DEPLOY_PATH
+        envs: DEPLOY_PATH,GITHUB_SHA
         script: |
           # Set deployment path (default to project path if not provided)
           DEPLOY_PATH=${DEPLOY_PATH:-/var/www/beanstack_e-commerce-small-enterprise-structure}
@@ -86,7 +110,7 @@ jobs:
           else
             echo "Resetting repository to origin/main..."
             git fetch origin main
-            git reset --hard origin/main
+            git reset --hard ${{ github.event.workflow_run.head_sha || github.sha }}
             git clean -fd
           fi
           

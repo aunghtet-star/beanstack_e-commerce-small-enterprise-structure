@@ -34,7 +34,7 @@ class OrderService
 
             foreach ($cartItems as $item) {
                 $this->validateAndReserveStock($item);
-                
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
@@ -43,7 +43,7 @@ class OrderService
                     'quantity' => $item->quantity,
                 ]);
 
-                $this->recordStockMovement($item->product, $item->quantity, 'Order ' . $order->number);
+                $this->recordStockMovement($item->product, $item->quantity, 'Order '.$order->number);
             }
 
             return $order;
@@ -69,9 +69,9 @@ class OrderService
     private function validateAndReserveStock(CartItem $item): void
     {
         $product = Product::lockForUpdate()->find($item->product_id);
-        
-        if (!$product || $product->stock < $item->quantity) {
-            throw new \RuntimeException('Insufficient stock for ' . ($product->name ?? 'a product'));
+
+        if (! $product || $product->stock < $item->quantity) {
+            throw new \RuntimeException('Insufficient stock for '.($product->name ?? 'a product'));
         }
 
         $product->decrement('stock', $item->quantity);

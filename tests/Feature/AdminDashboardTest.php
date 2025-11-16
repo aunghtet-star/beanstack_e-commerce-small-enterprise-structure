@@ -14,12 +14,11 @@ class AdminDashboardTest extends TestCase
     public function admin_can_access_admin_dashboard(): void
     {
         $admin = User::factory()->withPersonalTeam()->create(['role' => 'admin']);
-        
+
         $response = $this->actingAs($admin)->get(route('admin.dashboard'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('Admin/Dashboard')
+        $response->assertInertia(fn ($page) => $page->component('Admin/Dashboard')
         );
     }
 
@@ -27,7 +26,7 @@ class AdminDashboardTest extends TestCase
     public function regular_user_cannot_access_admin_dashboard(): void
     {
         $user = User::factory()->withPersonalTeam()->create(['role' => 'user']);
-        
+
         $response = $this->actingAs($user)->get(route('admin.dashboard'));
 
         $response->assertForbidden();
@@ -47,17 +46,16 @@ class AdminDashboardTest extends TestCase
         // Create test data
         User::factory()->withPersonalTeam()->count(5)->create(['role' => 'user']);
         User::factory()->withPersonalTeam()->count(2)->create(['role' => 'admin']);
-        
+
         $admin = User::factory()->withPersonalTeam()->create(['role' => 'admin']);
-        
+
         $response = $this->actingAs($admin)->get(route('admin.dashboard'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('Admin/Dashboard')
-                ->has('stats')
-                ->where('stats.totalUsers', 8) // 5 users + 2 admins + 1 current admin
-                ->where('stats.adminUsers', 3)
+        $response->assertInertia(fn ($page) => $page->component('Admin/Dashboard')
+            ->has('stats')
+            ->where('stats.totalUsers', 8) // 5 users + 2 admins + 1 current admin
+            ->where('stats.adminUsers', 3)
         );
     }
 
@@ -65,7 +63,7 @@ class AdminDashboardTest extends TestCase
     public function admin_middleware_is_applied_to_admin_routes(): void
     {
         $user = User::factory()->withPersonalTeam()->create(['role' => 'user']);
-        
+
         // Test that admin middleware blocks regular users
         $response = $this->actingAs($user)
             ->get('/admin/dashboard');

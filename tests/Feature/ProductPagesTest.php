@@ -16,9 +16,8 @@ class ProductPagesTest extends TestCase
         $response = $this->get('/products');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Products/Index')
-                ->has('products')
+        $response->assertInertia(fn ($page) => $page->component('Products/Index')
+            ->has('products')
         );
     }
 
@@ -38,9 +37,8 @@ class ProductPagesTest extends TestCase
         $response = $this->get('/products');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Products/Index')
-                ->has('products.data', 5)
+        $response->assertInertia(fn ($page) => $page->component('Products/Index')
+            ->has('products.data', 5)
         );
     }
 
@@ -52,11 +50,10 @@ class ProductPagesTest extends TestCase
         $response = $this->get("/products/{$product->id}");
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Products/Show')
-                ->has('product')
-                ->where('product.id', $product->id)
-                ->where('product.name', $product->name)
+        $response->assertInertia(fn ($page) => $page->component('Products/Show')
+            ->has('product')
+            ->where('product.id', $product->id)
+            ->where('product.name', $product->name)
         );
     }
 
@@ -64,15 +61,14 @@ class ProductPagesTest extends TestCase
     public function product_detail_page_shows_related_products(): void
     {
         $product = Product::factory()->create(['stock' => 10]);
-        
+
         Product::factory()->count(5)->create(['stock' => 10]);
 
         $response = $this->get("/products/{$product->id}");
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Products/Show')
-                ->has('relatedProducts')
+        $response->assertInertia(fn ($page) => $page->component('Products/Show')
+            ->has('relatedProducts')
         );
     }
 
@@ -82,10 +78,9 @@ class ProductPagesTest extends TestCase
         $response = $this->get('/category/men');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Products/Index')
-                ->has('products')
-                ->where('category', 'men')
+        $response->assertInertia(fn ($page) => $page->component('Products/Index')
+            ->has('products')
+            ->where('category', 'men')
         );
     }
 
@@ -121,10 +116,9 @@ class ProductPagesTest extends TestCase
         $response = $this->get('/products');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Products/Index')
-                ->has('products.data', 12) // Default pagination is 12
-                ->has('products.links')
+        $response->assertInertia(fn ($page) => $page->component('Products/Index')
+            ->has('products.data', 12) // Default pagination is 12
+            ->has('products.links')
         );
     }
 }

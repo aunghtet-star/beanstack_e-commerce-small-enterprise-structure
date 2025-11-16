@@ -8,10 +8,10 @@ class CartService
 {
     public function getSessionId(): string
     {
-        if (!Session::has('cart_session_id')) {
+        if (! Session::has('cart_session_id')) {
             Session::put('cart_session_id', Session::getId());
         }
-        
+
         return Session::get('cart_session_id');
     }
 

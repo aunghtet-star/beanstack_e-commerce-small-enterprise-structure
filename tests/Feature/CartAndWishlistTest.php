@@ -53,7 +53,7 @@ class CartAndWishlistTest extends TestCase
     public function test_can_update_cart_item_quantity()
     {
         $product = Product::factory()->create(['stock' => 10]);
-        
+
         $cartResponse = $this->post(route('cart.store'), [
             'product_id' => $product->id,
             'quantity' => 1,
@@ -77,7 +77,7 @@ class CartAndWishlistTest extends TestCase
     public function test_can_remove_item_from_cart()
     {
         $product = Product::factory()->create(['stock' => 10]);
-        
+
         $this->post(route('cart.store'), [
             'product_id' => $product->id,
             'quantity' => 1,

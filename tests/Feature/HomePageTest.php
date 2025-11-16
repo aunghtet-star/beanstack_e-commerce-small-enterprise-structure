@@ -16,8 +16,7 @@ class HomePageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Home')
+        $response->assertInertia(fn ($page) => $page->component('Home')
         );
     }
 
@@ -35,9 +34,8 @@ class HomePageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Home')
-                ->has('trendingProducts', 3)
+        $response->assertInertia(fn ($page) => $page->component('Home')
+            ->has('trendingProducts', 3)
         );
     }
 
@@ -65,10 +63,9 @@ class HomePageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Home')
-                ->has('trendingProducts', 1)
-                ->where('trendingProducts.0.id', $featuredWithStock->id)
+        $response->assertInertia(fn ($page) => $page->component('Home')
+            ->has('trendingProducts', 1)
+            ->where('trendingProducts.0.id', $featuredWithStock->id)
         );
     }
 
@@ -84,9 +81,8 @@ class HomePageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Home')
-                ->has('trendingProducts', 4)
+        $response->assertInertia(fn ($page) => $page->component('Home')
+            ->has('trendingProducts', 4)
         );
     }
 
@@ -110,9 +106,8 @@ class HomePageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Home')
-                ->where('trendingProducts.0.id', $newProduct->id)
+        $response->assertInertia(fn ($page) => $page->component('Home')
+            ->where('trendingProducts.0.id', $newProduct->id)
         );
     }
 
@@ -122,12 +117,11 @@ class HomePageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Home')
-                ->has('testimonials', 3)
-                ->where('testimonials.0.name', 'Jessica L.')
-                ->where('testimonials.1.name', 'Michael B.')
-                ->where('testimonials.2.name', 'Sarah K.')
+        $response->assertInertia(fn ($page) => $page->component('Home')
+            ->has('testimonials', 3)
+            ->where('testimonials.0.name', 'Jessica L.')
+            ->where('testimonials.1.name', 'Michael B.')
+            ->where('testimonials.2.name', 'Sarah K.')
         );
     }
 
@@ -137,10 +131,9 @@ class HomePageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Home')
-                ->has('canLogin')
-                ->has('canRegister')
+        $response->assertInertia(fn ($page) => $page->component('Home')
+            ->has('canLogin')
+            ->has('canRegister')
         );
     }
 
@@ -150,9 +143,8 @@ class HomePageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Home')
-                ->has('trendingProducts', 0)
+        $response->assertInertia(fn ($page) => $page->component('Home')
+            ->has('trendingProducts', 0)
         );
     }
 }

@@ -13,15 +13,14 @@ class StripeWebhookController extends Controller
     public function __construct(
         private readonly OrderService $orderService,
         private readonly PaymentService $paymentService
-    ) {
-    }
+    ) {}
 
     public function handle(Request $request)
     {
         $payload = $request->getContent();
         $event = json_decode($payload, true);
 
-        if (!is_array($event) || !isset($event['type'])) {
+        if (! is_array($event) || ! isset($event['type'])) {
             return response('Invalid payload', 400);
         }
 
@@ -36,6 +35,7 @@ class StripeWebhookController extends Controller
             };
         } catch (\Throwable $e) {
             Log::error('Stripe webhook error: '.$e->getMessage(), ['event' => $event]);
+
             return response('Webhook error', 500);
         }
 

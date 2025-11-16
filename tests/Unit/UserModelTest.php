@@ -52,11 +52,11 @@ class UserModelTest extends TestCase
     public function it_can_update_role(): void
     {
         $user = User::factory()->create(['role' => 'user']);
-        
+
         $this->assertTrue($user->isUser());
-        
+
         $user->update(['role' => 'admin']);
-        
+
         $this->assertTrue($user->fresh()->isAdmin());
         $this->assertFalse($user->fresh()->isUser());
     }

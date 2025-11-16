@@ -16,7 +16,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         $name = $this->faker->unique()->words(3, true);
-        
+
         // Sample product images from Unsplash
         $images = [
             'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400',
