@@ -26,12 +26,18 @@ class CheckoutController extends Controller
 
         $totals = $this->orderService->calculateTotals($cartItems);
 
-        // Only create setup intent if Stripe is properly configured
+        // Only create setup intent if Stripe is properly configured and not in testing
         $setupIntent = null;
-        if (config('services.stripe.key') && config('services.stripe.secret') && app()->environment() !== 'testing') {
+        $stripeKey = config('services.stripe.key');
+        $stripeSecret = config('services.stripe.secret');
+
+        if ($stripeKey && $stripeSecret &&
+            app()->environment() !== 'testing' &&
+            !str_contains($stripeKey, 'mock') &&
+            !str_contains($stripeSecret, 'mock')) {
             $setupIntent = $request->user()->createSetupIntent();
         } else {
-            // Mock setup intent for testing
+            // Mock setup intent for testing or when using mock keys
             $setupIntent = (object) ['client_secret' => 'seti_test_secret'];
         }
 

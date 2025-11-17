@@ -12,8 +12,12 @@ class PaymentService
 {
     public function chargeCustomer(User $user, int $amountCents, string $paymentMethod, Order $order): Payment
     {
-        // For testing, return a mock payment without calling Stripe
-        if (app()->environment('testing') || !config('services.stripe.secret')) {
+        $stripeSecret = config('services.stripe.secret');
+
+        // For testing or mock keys, return a mock payment without calling Stripe
+        if (app()->environment('testing') ||
+            !$stripeSecret ||
+            str_contains($stripeSecret, 'mock')) {
             return Payment::create([
                 'id' => (string) Str::ulid(),
                 'order_id' => $order->id,
@@ -51,8 +55,12 @@ class PaymentService
 
     public function savePaymentMethodAsDefault(User $user, string $paymentMethod): void
     {
-        // Skip Stripe calls in testing
-        if (app()->environment('testing') || !config('services.stripe.secret')) {
+        $stripeSecret = config('services.stripe.secret');
+
+        // Skip Stripe calls in testing or with mock keys
+        if (app()->environment('testing') ||
+            !$stripeSecret ||
+            str_contains($stripeSecret, 'mock')) {
             return;
         }
 
