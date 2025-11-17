@@ -24,6 +24,11 @@ class Order extends Model
         'placed_at',
     ];
 
+    protected $casts = [
+        'total' => 'decimal:2',
+        'placed_at' => 'datetime',
+    ];
+
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);

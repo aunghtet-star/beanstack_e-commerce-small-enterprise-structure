@@ -17,7 +17,7 @@ return new class extends Migration
             $table->char('number', 12)->unique();
             $table->text('customer_email');
             $table->char('currency', 3)->default('USD');
-            $table->integer('total');
+            $table->decimal('total', 10, 2);
             $table->string('status', 30);
             $table->timestampTz('placed_at')->nullable();
             $table->timestampTz('created_at')->useCurrent();

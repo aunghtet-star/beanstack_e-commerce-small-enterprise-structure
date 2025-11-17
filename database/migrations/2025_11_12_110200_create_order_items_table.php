@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignUlid('order_id')->constrained('orders')->cascadeOnDelete();
             $table->ulid('product_id');
             $table->text('name_snapshot');
-            $table->integer('price_snapshot');
+            $table->decimal('price_snapshot', 8, 2);
             $table->integer('quantity');
             $table->timestampTz('created_at')->useCurrent();
 
